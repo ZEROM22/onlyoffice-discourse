@@ -12,7 +12,8 @@
     "lint:hbs:fix": "ember-template-lint {assets,admin/assets,test}/javascripts/**/*.gjs --fix --no-error-on-unmatched-pattern",
     "lint:prettier": "pnpm prettier assets/stylesheets/**/*.scss {assets,admin/assets,test}/javascripts/**/*.js --check --no-error-on-unmatched-pattern",
     "lint:prettier:fix": "pnpm prettier assets/stylesheets/**/*.scss {assets,admin/assets,test}/javascripts/**/*.js -w --no-error-on-unmatched-pattern",
-    "lint:types": "ember-tsc -b"
+    "lint:ruby": "bundle exec rubocop && bundle exec stree check Gemfile $(git ls-files '*.rb') $(git ls-files '*.rake') $(git ls-files '*.thor')",
+    "lint:ruby:fix": "bundle exec rubocop -a && bundle exec stree write Gemfile $(git ls-files '*.rb') $(git ls-files '*.rake') $(git ls-files '*.thor')"
   },
   "devDependencies": {
     "@discourse/lint-configs": "2.32.0",

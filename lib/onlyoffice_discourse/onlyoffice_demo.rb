@@ -10,13 +10,7 @@ module Onlyoffice
     def self.demo_data
       data_json = PluginStore.get(Onlyoffice::PLUGIN_NAME, "demo_data")
 
-      if data_json.nil?
-        return {
-          available: true,
-          enabled: false,
-          start: nil
-        }
-      end
+      return { available: true, enabled: false, start: nil } if data_json.nil?
 
       data = JSON.parse(data_json, symbolize_names: true)
 
@@ -56,7 +50,7 @@ module Onlyoffice
           data[:saved_settings] = {
             address: SiteSetting.ONLYOFFICE_Docs_address,
             secret: SiteSetting.ONLYOFFICE_Docs_secret_key,
-            header: SiteSetting.JWT_header
+            header: SiteSetting.JWT_header,
           }
           PluginStore.set(Onlyoffice::PLUGIN_NAME, "demo_data", data.to_json)
         end
@@ -69,7 +63,8 @@ module Onlyoffice
       else
         # Restore saved settings when demo disabled
         if data[:saved_settings]
-          SiteSetting.ONLYOFFICE_Docs_address = data[:saved_settings][:address] || "http://localhost"
+          SiteSetting.ONLYOFFICE_Docs_address =
+            data[:saved_settings][:address] || "http://localhost"
           SiteSetting.ONLYOFFICE_Docs_secret_key = data[:saved_settings][:secret] || ""
           SiteSetting.JWT_header = data[:saved_settings][:header] || "Authorization"
 

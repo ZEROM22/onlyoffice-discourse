@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 module Onlyoffice
   class Permission < ActiveRecord::Base
-    self.table_name = 'onlyoffice_permissions'
+    self.table_name = "onlyoffice_permissions"
 
     belongs_to :upload
     belongs_to :user
@@ -11,7 +11,7 @@ module Onlyoffice
     validates :permission_type, inclusion: { in: %w[viewer editor] }
     validates :user_id, uniqueness: { scope: :upload_id }
 
-    VIEWER = 'viewer'
-    EDITOR = 'editor'
+    VIEWER = "viewer"
+    EDITOR = "editor"
   end
 end

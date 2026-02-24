@@ -11,7 +11,7 @@ module Onlyoffice
 
     def convert
       validate_parameters!
-      
+
       file_url = get_file_url
       raise "File not found" if file_url.blank?
 
@@ -19,10 +19,7 @@ module Onlyoffice
       converted_file_url = request_conversion(full_file_url, file_url)
 
       original_filename = File.basename(file_url, ".*")
-      {
-        download_url: converted_file_url,
-        filename: "#{original_filename}.#{@target_format}"
-      }
+      { download_url: converted_file_url, filename: "#{original_filename}.#{@target_format}" }
     end
 
     private
@@ -33,9 +30,9 @@ module Onlyoffice
 
     def get_file_url
       file_url = ""
-      PrettyText::Helpers.lookup_upload_urls([@upload_short_url]).each do |short_url, paths|
-        file_url = paths[:url]
-      end
+      PrettyText::Helpers
+        .lookup_upload_urls([@upload_short_url])
+        .each { |short_url, paths| file_url = paths[:url] }
       file_url
     end
 
@@ -46,13 +43,13 @@ module Onlyoffice
     def request_conversion(full_file_url, file_url)
       ds_internal_host = SiteSetting.ONLYOFFICE_Docs_address_for_internal_requests_from_the_server
       conversion_url = "#{ds_internal_host}/ConvertService.ashx"
-      
+
       conversion_request = {
         url: full_file_url,
         outputtype: @target_format,
-        filetype: File.extname(file_url).delete('.').downcase,
+        filetype: File.extname(file_url).delete(".").downcase,
         title: File.basename(file_url, ".*"),
-        async: false
+        async: false,
       }
 
       if Onlyoffice::OnlyofficeJwt.enabled?
@@ -61,26 +58,22 @@ module Onlyoffice
 
       uri = URI(conversion_url)
       http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = uri.scheme == 'https'
+      http.use_ssl = uri.scheme == "https"
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE if Rails.env.development?
 
       request = Net::HTTP::Post.new(uri.path)
-      request['Content-Type'] = 'application/json'
-      request['Accept'] = 'application/json'
+      request["Content-Type"] = "application/json"
+      request["Accept"] = "application/json"
       request.body = conversion_request.to_json
 
       response = http.request(request)
       result = JSON.parse(response.body)
 
-      if result['error']
-        raise "Conversion failed: #{result['error']}"
-      end
+      raise "Conversion failed: #{result["error"]}" if result["error"]
 
-      unless result['fileUrl']
-        raise "Conversion failed: no file URL returned"
-      end
+      raise "Conversion failed: no file URL returned" unless result["fileUrl"]
 
-      result['fileUrl']
+      result["fileUrl"]
     end
   end
 end
